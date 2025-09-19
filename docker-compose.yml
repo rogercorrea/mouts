@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: em_postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - em-network
+
+  backend:
+    build:
+      context: ./backend/src/EmployeeManager.Api
+      dockerfile: Dockerfile
+    container_name: em_backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=${CONNECTION_STRING}
+      - JWT__Issuer=${JWT_ISSUER}
+      - JWT__Key=${JWT_KEY}
+    depends_on:
+      - postgres
+    ports:
+      - "5000:80"
+    networks:
+      - em-network
+    volumes:
+      - ./backend/src:/app
+    entrypoint: ["/bin/bash", "/app/entrypoint.sh"]
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: em_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - em-network
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+
+volumes:
+  pgdata:
+
+networks:
+  em-network:
+    driver: bridge
