@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using EmployeeManager.Api.Services;
 using EmployeeManager.Domain;
+using EmployeeManager.Api.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
