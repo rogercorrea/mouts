@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { create } from '../api/employees'
+import { validatePassword } from '../utils/validatePassword';
+import PasswordInput from '../components/PasswordInput';
+import { notifyError, notifySuccess } from '../utils/notifications';
 
 export default function CreateEmployee() {
   const [firstName, setFirstName] = useState('')
@@ -8,32 +12,33 @@ export default function CreateEmployee() {
   const [doc, setDoc] = useState('')
   const [birthDate, setBirthDate] = useState('')
   const [password, setPassword] = useState('')
-  const [role, setRole] = useState('User')
+  const [role, setRole] = useState(0)
   const [managerId, setManagerId] = useState('')
   const nav = useNavigate()
 
   async function submit(e) {
-    e.preventDefault()
-    const token = localStorage.getItem('token')
+    e.preventDefault();
+
+    const check = validatePassword(password);
+    if (!check.valid) {
+      notifyError("Weak password — please fix the requirements before continuing.");
+      return;
+    }
+
     const body = {
       firstName, lastName, email,
       documentNumber: doc,
       birthDate,
       password,
-      role,
+      Role: Number(role),
       managerId: managerId || null
     }
-    const res = await fetch('/api/employees', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
-      body: JSON.stringify(body)
-    })
-    const data = await res.json()
-    if (res.ok) {
-      alert('Created')
+    const res = await create(JSON.stringify(body));
+    if (res.id) {
+      notifySuccess('Created employee successfully');
       nav('/employees')
     } else {
-      alert(data.message || 'Error creating')
+      notifyError(res || 'Error creating')
     }
   }
 
@@ -46,10 +51,10 @@ export default function CreateEmployee() {
         <div><label>Email</label><br/><input value={email} onChange={e => setEmail(e.target.value)} type='email' required/></div>
         <div><label>Document Number</label><br/><input value={doc} onChange={e => setDoc(e.target.value)} required/></div>
         <div><label>Birth Date</label><br/><input value={birthDate} onChange={e => setBirthDate(e.target.value)} type='date' required/></div>
-        <div><label>Password</label><br/><input value={password} onChange={e => setPassword(e.target.value)} type='password' required/></div>
+        <div><PasswordInput value={password} onChange={setPassword} id="register-password" label="password" width="80px" height="16px" required /></div>
         <div><label>Role</label><br/>
           <select value={role} onChange={e => setRole(e.target.value)}>
-            <option>User</option><option>Leader</option><option>Director</option><option>Admin</option>
+            <option value={0}>User</option><option value={1}>Leader</option><option value={2}>Director</option><option value={3}>Admin</option>
           </select>
         </div>
         <div><label>Manager Id (optional)</label><br/><input value={managerId} onChange={e => setManagerId(e.target.value)} /></div>

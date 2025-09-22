@@ -1,10 +1,20 @@
-import React from 'react'
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
-import Login from './pages/Login'
-import Employees from './pages/Employees'
-import CreateEmployee from './pages/CreateEmployee'
+import React, { useEffect } from "react";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import Login from "./pages/Login";
+import Employees from "./pages/Employees";
+import CreateEmployee from "./pages/CreateEmployee";
 
-export default function App() {
+import { NotificationsProvider, useNotifications } from "./context/NotificationsContext";
+import { setNotifier } from "./utils/notifications";
+
+function AppContent() {
+  const notifications = useNotifications();
+
+  // Inicializa o notifications.js com os métodos do contexto
+  useEffect(() => {
+    setNotifier(notifications);
+  }, [notifications]);
+
   return (
     <BrowserRouter>
       <nav style={{ padding: 10 }}>
@@ -16,5 +26,13 @@ export default function App() {
         <Route path="/create" element={<CreateEmployee />} />
       </Routes>
     </BrowserRouter>
-  )
+  );
+}
+
+export default function App() {
+  return (
+    <NotificationsProvider>
+      <AppContent />
+    </NotificationsProvider>
+  );
 }
