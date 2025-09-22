@@ -54,7 +54,7 @@ TestResult.xml
 nunit-*.xml
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.js
 
@@ -62,8 +62,8 @@ nunit-*.xml
 /coverage
 
 # production
-/build
-/dist
+build/
+dist/
 
 # misc
 .DS_Store
