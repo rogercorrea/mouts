@@ -33,18 +33,22 @@ public class EmployeesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var e = await _repo.GetByIdAsync(id);
-        if (e == null) return NotFound();
+        var ret = await _repo.GetByIdAsync(id);
+        if (ret == null) return NotFound();
+        
+        var employee = ret.Value;
+        if (employee == null) return NotFound();
         var dto = new EmployeeDto {
-            Id = e.Id,
-            FirstName = e.FirstName,
-            LastName = e.LastName,
-            Email = e.Email,
-            DocumentNumber = e.DocumentNumber,
-            BirthDate = e.BirthDate,
-            Role = e.Role.ToString(),
-            ManagerId = e.ManagerId
+            Id = employee.Id,
+            FirstName = employee.FirstName,
+            LastName = employee.LastName,
+            Email = employee.Email,
+            DocumentNumber = employee.DocumentNumber,
+            BirthDate = employee.BirthDate,
+            Role = employee.Role.ToString(),
+            ManagerId = employee.ManagerId
         };
+        
         return Ok(dto);
     }
 
@@ -70,7 +74,7 @@ public class EmployeesController : ControllerBase
                 LastName = dto.LastName,
                 Email = dto.Email,
                 DocumentNumber = dto.DocumentNumber,
-                BirthDate = dto.BirthDate,
+                BirthDate = dto.BirthDate.ToUniversalTime(),
                 Role = dto.Role,
                 ManagerId = dto.ManagerId,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password)
@@ -88,14 +92,18 @@ public class EmployeesController : ControllerBase
     [Authorize(Roles = "Admin,Director,Leader")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateEmployeeDto dto)
     {
-        var e = await _repo.GetByIdAsync(id);
-        if (e == null) return NotFound();
-        e.FirstName = dto.FirstName;
-        e.LastName = dto.LastName;
-        e.Email = dto.Email;
-        e.ManagerId = dto.ManagerId;
-        e.Role = dto.Role;
-        await _repo.UpdateAsync(e);
+        var ret = await _repo.GetByIdAsync(id);
+        if (ret == null) return NotFound();
+
+        var employee = ret.Value;
+        if (employee == null) return NotFound();
+
+        employee.FirstName = dto.FirstName;
+        employee.LastName = dto.LastName;
+        employee.Email = dto.Email;
+        employee.ManagerId = dto.ManagerId;
+        employee.Role = dto.Role;
+        await _repo.UpdateAsync(employee);
         return NoContent();
     }
 

@@ -1,22 +1,19 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using BCrypt.Net;
 using EmployeeManager.Api.Repositories;
 using EmployeeManager.Domain;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Options; // Add this for IOptions<>
+using EmployeeManager.Infrastructure.Configuration; // Add this for JwtSettings (adjust namespace if needed)
 
 namespace EmployeeManager.Api.Services
 {
     public class AuthService : IAuthService
     {
         private readonly IEmployeeRepository _repo;
-        private readonly IConfiguration _config;
+        private readonly IOptions<JwtSettings> _jwtSettings;
 
-        public AuthService(IEmployeeRepository repo, IConfiguration config)
+        public AuthService(IEmployeeRepository repo, IConfiguration config, IOptions<JwtSettings> jwtSettings)
         {
             _repo = repo;
-            _config = config;
+            _jwtSettings = jwtSettings;
         }
 
         public async Task<Employee> RegisterAsync(CreateEmployeeDto dto, Role creatorRole)
@@ -53,30 +50,19 @@ namespace EmployeeManager.Api.Services
 
         public async Task<string> LoginAsync(LoginDto dto)
         {
-            var user = await _repo.GetByEmailAsync(dto.Email);
-            if (user == null) throw new Exception("Invalid credentials");
-            if (user.PasswordHash == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-                throw new Exception("Invalid credentials");
+            var ret = await _repo.GetByEmailAsync(dto.Email);
+            if (ret == null) throw new InvalidDataException("Invalid user");
 
-            // create token
-            var key = Encoding.ASCII.GetBytes(_config["JWT:Key"] ?? throw new Exception("JWT key missing"));
-            var issuer = _config["JWT:Issuer"] ?? "EmployeeManagerApi";
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var claims = new List<Claim>
+            var user = ret?.Value;
+            if (user == null)
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Email),
-                new Claim(ClaimTypes.Role, user.Role.ToString())
-            };
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddHours(8),
-                Issuer = issuer,
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+                throw new InvalidDataException("Invalid user");
+            }
+
+            if (string.IsNullOrEmpty(user.PasswordHash) || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
+                throw new UnauthorizedAccessException("Invalid credentials");
+            
+            return new LoginService(_jwtSettings).GenerateToken(user);
         }
     }
 }

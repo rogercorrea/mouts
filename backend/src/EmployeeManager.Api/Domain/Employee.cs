@@ -17,16 +17,16 @@ namespace EmployeeManager.Domain
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required]
-        public string FirstName { get; set; }
+        public required string FirstName { get; set; }
 
         [Required]
-        public string LastName { get; set; }
+        public required string LastName { get; set; }
 
         [Required]
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         [Required]
-        public string DocumentNumber { get; set; }
+        public required string DocumentNumber { get; set; }
 
         [Required]
         public DateTime BirthDate { get; set; }
@@ -38,6 +38,6 @@ namespace EmployeeManager.Domain
         public Guid? ManagerId { get; set; }
 
         [ForeignKey("ManagerId")]
-        public Employee Manager { get; set; }
+        public Employee? Manager { get; set; }
     }
 }
