@@ -1,5 +1,7 @@
 using EmployeeManager.Domain;
 using EmployeeManager.Infrastructure;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManager.Api.Repositories
@@ -24,14 +26,29 @@ namespace EmployeeManager.Api.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public async Task<Employee> GetByDocumentAsync(string doc) =>
-            await _db.Employees.FirstOrDefaultAsync(x => x.DocumentNumber == doc);
+        public async Task<ActionResult<Employee>> GetByDocumentAsync(string doc)
+        {
+            var employee = await _db.Employees.Where(x => x.DocumentNumber.ToLower().Trim() == doc.ToLower().Trim()).FirstOrDefaultAsync();
+            if (employee == null)
+                return new NotFoundResult();
+            return employee;
+        }
 
-        public async Task<Employee> GetByEmailAsync(string email) =>
-            await _db.Employees.FirstOrDefaultAsync(x => x.Email == email);
+        public async Task<ActionResult<Employee>>  GetByEmailAsync(string email)
+        {
+            var employee = await _db.Employees.Where(x => x.Email.ToLower().Trim() == email.ToLower().Trim()).FirstOrDefaultAsync();
+            if (employee == null)
+                return new NotFoundResult();
+            return employee;
+        }
 
-        public async Task<Employee> GetByIdAsync(Guid id) =>
-            await _db.Employees.FindAsync(id);
+        public async Task<ActionResult<Employee>>  GetByIdAsync(Guid id)
+        {
+            var employee = await _db.Employees.FindAsync(id);
+            if (employee == null)
+                return new NotFoundResult();
+            return employee;
+        }
 
         public async Task<List<Employee>> ListAsync() =>
             await _db.Employees.ToListAsync();

@@ -50,6 +50,10 @@ public class AuthController : ControllerBase
             var token = await _auth.LoginAsync(dto);
             return Ok(new { token });
         }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
         catch (Exception ex)
         {
             return BadRequest(new { message = ex.Message });
