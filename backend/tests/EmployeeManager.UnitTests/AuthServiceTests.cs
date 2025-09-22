@@ -22,7 +22,7 @@ public class AuthServiceTests
             Email = "kid@example.com",
             DocumentNumber = "12345",
             BirthDate = DateTime.UtcNow.AddYears(-17),
-            Password = "Passw0rd!"
+            Password = "Passw0rd!",
         };
 
         await Assert.ThrowsAsync<Exception>(() => svc.RegisterAsync(dto, Role.Admin));

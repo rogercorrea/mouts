@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import {listAll} from '../api/employees'
 
 export default function Employees() {
   const [list, setList] = useState([])
@@ -6,15 +7,12 @@ export default function Employees() {
 
   useEffect(() => {
     (async () => {
-      const token = localStorage.getItem('token')
-      const res = await fetch('/api/employees', {
-        headers: { Authorization: 'Bearer ' + token }
-      })
-      if (res.ok) {
-        const data = await res.json()
-        setList(data)
+      const res = await listAll();
+      console.log(res);
+      if (res) {
+        setList(res);
       } else {
-        const err = await res.json()
+        const err = res;
         alert(err.message || 'Failed to load')
       }
       setLoading(false)
