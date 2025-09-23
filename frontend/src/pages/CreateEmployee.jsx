@@ -5,6 +5,8 @@ import { validatePassword } from '../utils/validatePassword';
 import PasswordInput from '../components/PasswordInput';
 import { notifyError, notifySuccess } from '../utils/notifications';
 
+import '../style/form.css';
+
 export default function CreateEmployee() {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')

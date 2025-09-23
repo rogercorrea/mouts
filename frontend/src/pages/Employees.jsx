@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import {listAll} from '../api/employees'
 
+import "../style/table.css";
+
 export default function Employees() {
   const [list, setList] = useState([])
   const [loading, setLoading] = useState(true)
@@ -24,7 +26,7 @@ export default function Employees() {
   return (
     <div style={{ padding: 20 }}>
       <h2>Employees</h2>
-      <table border="1" cellPadding="8">
+      <table>
         <thead><tr><th>Name</th><th>Email</th><th>Role</th></tr></thead>
         <tbody>
           {list.map(e => (
