@@ -7,6 +7,8 @@ import CreateEmployee from "./pages/CreateEmployee";
 import { NotificationsProvider, useNotifications } from "./context/NotificationsContext";
 import { setNotifier } from "./utils/notifications";
 
+import "./style/global.css";
+
 function AppContent() {
   const notifications = useNotifications();
 
@@ -17,7 +19,7 @@ function AppContent() {
 
   return (
     <BrowserRouter>
-      <nav style={{ padding: 10 }}>
+      <nav>
         <Link to="/">Home</Link> | <Link to="/employees">Employees</Link> | <Link to="/create">Create</Link>
       </nav>
       <Routes>

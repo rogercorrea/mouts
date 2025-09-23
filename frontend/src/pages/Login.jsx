@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {login} from '../api/auth'
 
+import '../style/login.css';
+
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -20,7 +22,6 @@ export default function Login() {
 
   return (
     <div style={{ padding: 20 }}>
-      <h2>Login</h2>
       <form onSubmit={submit}>
         <div>
           <label>Email</label><br/>

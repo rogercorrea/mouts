@@ -22,7 +22,7 @@ export default function PasswordInput({
 
   return (
     <div style={{ marginBottom: 12 }}>
-      <label htmlFor={id} style={{ display: "block", marginBottom: 6 }}>
+      <label htmlFor={id} style={{ display: "block", marginBottom: 40 }}>
         {label}
       </label>
 
@@ -37,14 +37,8 @@ export default function PasswordInput({
         <button
           type="button"
           onClick={() => setVisible((v) => !v)}
-          aria-label={visible ? "Hide password" : "Show password"}
-          style={{
-            cursor: "pointer",
-            borderRadius: 4,
-            border: "1px solid #ccc",
-            background: "#fff",
-          }}
-        >
+          class="password-show-btn"
+          aria-label={visible ? "Hide password" : "Show password"}        >
           {visible ? "Hide" : "Show"}
         </button>
       </div>
