@@ -10,7 +10,7 @@ namespace EmployeeManager.Api.Services
         private readonly IEmployeeRepository _repo;
         private readonly IOptions<JwtSettings> _jwtSettings;
 
-        public AuthService(IEmployeeRepository repo, IConfiguration config, IOptions<JwtSettings> jwtSettings)
+        public AuthService(IEmployeeRepository repo, IOptions<JwtSettings> jwtSettings)
         {
             _repo = repo;
             _jwtSettings = jwtSettings;
