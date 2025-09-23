@@ -1,116 +1,126 @@
-# EmployeeManager Project
+# Employee Manager
 
-## Overview
-EmployeeManager is a full-stack application for managing employees, built with:
-- **Backend:** .NET 8, Entity Framework Core, PostgreSQL, JWT Authentication
-- **Frontend:** React + Vite
-- **Testing:** xUnit, Moq, FluentAssertions, EF Core InMemory
+A complete application to manage employees with authentication, roles, and security best practices.  
+This project is divided into two main parts: **Backend (ASP.NET Core + PostgreSQL)** and **Frontend (React + Vite)**.  
+It also includes **Docker support** for local development and production.
 
-The backend exposes REST APIs for employee management and authentication. The frontend provides a responsive interface with password validation.
+---
 
-## Backend Setup
+## 🚀 Features
 
-### Prerequisites
-- .NET 8 SDK
-- PostgreSQL
-- Docker & Docker Compose (optional for containerized setup)
+- User registration and authentication with **JWT**  
+- Secure password handling with **BCrypt**  
+- Role-based authorization (Admin, Manager, Employee)  
+- Employee CRUD (Create, Read, Update, Delete)  
+- PostgreSQL integration with **Entity Framework Core**  
+- Password strength validation on frontend  
+- API documentation with **Swagger**  
+- Unit and integration tests with **xUnit** and **Moq**
 
-### Configuration
-Create a `.env` file with the following variables:
+---
 
-```env
-POSTGRES_HOST=postgres
-POSTGRES_PORT=5432
-POSTGRES_USER=emuser
-POSTGRES_PASSWORD=EmP@ssw0rd!
-POSTGRES_DB=employee_manager_db
+## 🏗 SOLID Principles
 
-CONNECTION_STRING=Host=postgres;Port=5432;Database=employee_manager_db;Username=emuser;Password=EmP@ssw0rd!
+This project was developed following **SOLID principles** to ensure clean architecture and maintainability:
 
-JWT_ISSUER=EmployeeManagerApi
-JWT_KEY=YourSuperSecretJwtKey
+- **S (Single Responsibility Principle):** Each service, controller, and repository has one clear responsibility.  
+- **O (Open/Closed Principle):** The system is open for extension (new services, roles, validation rules) but closed for modification.  
+- **L (Liskov Substitution Principle):** Interfaces and abstractions (e.g., `IEmployeeRepository`) allow substituting implementations without breaking functionality.  
+- **I (Interface Segregation Principle):** Services use focused interfaces (e.g., repositories, authentication service) instead of large ones.  
+- **D (Dependency Inversion Principle):** High-level modules depend on abstractions, and dependencies are injected using **.NET Core Dependency Injection**.
 
-REACT_APP_API_URL=http://localhost:8080
+✅ Result: Easier testing, modular design, and scalability.
+
+---
+
+## 🔒 Security Benefits
+
+This project implements several security best practices:
+
+- **JWT Authentication:** Tokens are generated with strong cryptography and configurable expiration times.  
+- **BCrypt Password Hashing:** Passwords are never stored in plain text.  
+- **Environment Variables:** Secrets like `JWT_KEY` and database credentials are stored in `.env` files (not in source code).  
+- **Docker Isolation:** Backend, frontend, and database run in **separate containers**, reducing risks of cross-contamination.  
+- **Role-based Access Control:** APIs are protected according to user role (Admin, Manager, Employee).  
+- **Validation:** Inputs are validated with **FluentValidation** to prevent malformed or malicious data.
+
+---
+
+## 🐳 Running with Docker
+
+This project supports **Docker Compose** for easy setup.
+
+1. Make sure you have **Docker** and **Docker Compose** installed.  
+2. Copy `.env.example` to `.env` and configure your environment variables (JWT key, DB connection string, etc.).  
+3. Run the following command:
+
+```bash
+docker compose up --build
 ```
 
-### Running Locally
+4. The services will be available at:
+   - **Backend API:** http://localhost:5000  
+   - **Frontend App:** http://localhost:3000  
+   - **PostgreSQL Database:** localhost:5432  
 
-1. Restore packages and build the project:
+To stop containers:
+
 ```bash
+docker compose down
+```
+
+---
+
+## 🖥 Backend Setup (Manual)
+
+```bash
+cd backend/EmployeeManager.Api
 dotnet restore
-dotnet build
-```
-2. Apply database migrations:
-```bash
 dotnet ef database update
-```
-3. Run the API:
-```bash
-dotnet run --project EmployeeManager.Api
+dotnet run
 ```
 
-### Running with Docker Compose
+---
 
-1. Build and start the containers:
+## 🌐 Frontend Setup (Manual)
+
 ```bash
-docker-compose up --build
-```
-2. The API will be available at `http://localhost:8080`
-
-## Frontend Setup
-
-### Prerequisites
-- Node.js 20+
-- npm or yarn
-
-### Running Locally
-
-1. Install dependencies:
-```bash
+cd frontend
 npm install
-```
-2. Run the development server:
-```bash
 npm run dev
 ```
-3. Open `http://localhost:3000` in your browser.
 
-### Production Build
+---
+
+## ✅ Running Tests
+
 ```bash
-npm run build
-npm run preview
+cd backend/src/tests/EmployeeManager.Tests
+dotnet test
 ```
 
-## Password Validation
-The frontend validates password strength with the following rules:
-- Minimum 8 characters
-- At least one lowercase letter
-- At least one uppercase letter
-- At least one number
-- At least one special character (!@#$%)
-- No spaces
+---
 
-Weak passwords will trigger an alert: `Weak password — please fix the requirements before continuing.`
+## 📂 Project Structure
 
-## Running Tests
-
-### Backend
-```bash
-dotnet test EmployeeManager.Tests
+```
+backend/
+  EmployeeManager.Api/         # ASP.NET Core API
+  EmployeeManager.Infrastructure/ # Repositories, DbContext, Configurations
+  src/tests/EmployeeManager.Tests # Unit & integration tests
+frontend/
+  src/components/              # React components
+  src/utils/                   # Password validation logic
+docker-compose.yml             # Docker configuration
+README.md
 ```
 
-### Frontend
-```bash
-npm test
-```
+---
 
-## Security Notes
-- JWT keys **should not** be hardcoded in the source code. Use environment variables or a secure secrets manager.
-- Passwords are hashed using BCrypt.
+## 📌 Notes
 
-## CORS Configuration
-The API allows requests from `http://localhost:3000` during development.
+- Do **not** hardcode secrets (like JWT keys) in the codebase. Always use **environment variables**.  
+- Make sure to run database migrations when changing models.  
+- Passwords must follow strong validation rules (length, uppercase, lowercase, numbers, symbols, no spaces).
 
-## License
-MIT
-
+---
