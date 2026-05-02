@@ -2,6 +2,7 @@ namespace DeveloperStore.Domain.Entities;
 
 public class SaleItem
 {
+    public Guid Id { get; private set; } = Guid.NewGuid();
     public string ProductId { get; private set; }
     public int Quantity { get; private set; }
     public decimal UnitPrice { get; private set; }

@@ -28,6 +28,24 @@ public class Sale
 
     public void Cancel()
     {
+        if (IsCancelled)
+            throw new InvalidOperationException("Sale is already cancelled");
+
         IsCancelled = true;
+    }
+
+    public void Update(string customer, string branch)
+    {
+        if (IsCancelled)
+            throw new InvalidOperationException("Cannot update a cancelled sale");
+
+        if (string.IsNullOrWhiteSpace(customer))
+            throw new ArgumentException("Customer is required");
+
+        if (string.IsNullOrWhiteSpace(branch))
+            throw new ArgumentException("Branch is required");
+
+        Customer = customer;
+        Branch = branch;
     }
 }

@@ -3,14 +3,12 @@ using DeveloperStore.Application.Interfaces;
 using DeveloperStore.Domain.Entities;
 using FluentAssertions;
 using Moq;
-using Xunit;
 
 public class CreateSaleUseCaseTests
 {
     [Fact]
     public async Task Should_Create_Sale_And_Save_In_Repository()
     {
-        // Arrange
         var repoMock = new Mock<ISaleRepository>();
 
         var useCase = new CreateSaleUseCase(repoMock.Object);
@@ -25,12 +23,10 @@ public class CreateSaleUseCaseTests
             }
         };
 
-        // Act
         var result = await useCase.ExecuteAsync(request);
 
-        // Assert
         result.SaleId.Should().NotBeEmpty();
-        result.TotalAmount.Should().Be(45m); // 50 - 10%
+        result.TotalAmount.Should().Be(45m);
 
         repoMock.Verify(r => r.AddAsync(It.IsAny<Sale>()), Times.Once);
     }
